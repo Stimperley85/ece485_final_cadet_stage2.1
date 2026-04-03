@@ -407,8 +407,8 @@ begin
         data_out1 => reg1_data,
         data_out2 => reg2_data
     );    
-    if_id_reg1_data <= reg1_data;  
-    if_id_reg2_data <= reg2_data;
+    if_id_reg1_data <= reg1_data; -- suspiscious 
+    if_id_reg2_data <= reg2_data; -- suspicious 
    
     -- Immediate generator
         immediate_generator_inst: immediate_generator
@@ -435,7 +435,7 @@ begin
             op     => id_ex_alu_op,
             result => alu_result
         );
-        id_ex_alu_result <= alu_result;
+        id_ex_alu_result <= alu_result; -- suspicious
 
     -- EX/MEM pipeline register
 
@@ -452,15 +452,15 @@ begin
         mem_read  => ex_mem_mem_read,
         mem_write => ex_mem_mem_write --mem_write_chip --<what control signal?>
     );
-    mem_wb_mem_data <= mem_data; 
+    mem_wb_mem_data <= mem_data; --suspicious
 
     -- Comparator 
     not_equal_flag <= '1' when (ex_mem_reg1_data /= ex_mem_reg2_data);--<what do we compare to decide if we should branch?> else '0';
     
     next_pc <= std_logic_vector(signed(ex_mem_npc) + signed(ex_mem_imm)) when ((ex_mem_branch = '1') and (not_equal_flag = '1')) else --<math based on NPC and imm> when (<what control signals?>) else -- branch case
                std_logic_vector(signed(ex_mem_npc) + signed(ex_mem_imm)) when (ex_mem_jump = '1') else --<math based on NPC and imm> when (<what control signals?>) else  -- jump case
-               NPC when ((ex_mem_branch = '1') and (not_equal_flag = '0')) or ((ex_mem_branch = '0') and (ex_mem_jump = '0')) else 
-               next_pc;--(<what control signals? are any needed?>); -- note: this happens during IF !!! 1st two during MEM
+               NPC when ((ex_mem_branch = '1') and (not_equal_flag = '0')) or ((ex_mem_branch = '0') and (ex_mem_jump = '0')); 
+               --(<what control signals? are any needed?>); -- note: this happens during IF !!! 1st two during MEM
                --Don't think is right       
     -- MEM/WB pipeline register
 
@@ -471,7 +471,6 @@ begin
     -- MUX to write back to register file
     wb_data <= mem_wb_mem_data when (mem_wb_mem_read = '1') else --(<what control signals?>) else 
                x"10000000" when (mem_wb_load_addr = '1') else --(<what control signals?>) else  -- hack for custom load_addr instruction
-               mem_wb_alu_result when ((mem_wb_mem_read = '0') and (mem_wb_load_addr = '0'))else
-               wb_data;--(<what control signals?>);      
-    --mem_wb_rd <= mem_wb_instr(11 downto 7);           
+               mem_wb_alu_result when ((mem_wb_mem_read = '0') and (mem_wb_load_addr = '0'));
+               --(<what control signals?>);                
 end Behavioral;
