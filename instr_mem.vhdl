@@ -33,7 +33,7 @@ architecture Behavioral of instr_mem is
         16 => x"00000000",
         17 => x"00000000",
         18 => x"00000000",
-        19 => x"F20290E3", --  1 111001 00000 00101 001 000 0 1 1100011  --1 111101 00000 00101 001 100 0 1 1100011  bne x5, x0, loop   1 [jump -14*4=56 (jump -20); note: assumes PC is incremented by 4]
+        19 => x"F20290E3", -- "Kayla(F80298E3) Mine(F20290E3) 1 111001 00000 00101 001 000 0 1 1100011  --1 111101 00000 00101 001 100 0 1 1100011  bne x5, x0, loop   1 [jump -14*4=56 (jump -20); note: assumes PC is incremented by 4]
         20 => x"00000000", --1  1 1 111001 000
         21 => x"00000000",
         22 => x"00000000",

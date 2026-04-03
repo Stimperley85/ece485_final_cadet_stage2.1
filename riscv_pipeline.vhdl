@@ -291,6 +291,7 @@ begin
             if_id_rs1        => if_id_rs1,  --rs1
             if_id_rs2        => if_id_rs2,  --rs2
             if_id_rd         => if_id_rd,  --rd
+            --if_id_alu_result => if_id_alu_result,
 
             -- ID/EX pipeline registers
             id_ex_reg_write  => id_ex_reg_write,
@@ -309,6 +310,7 @@ begin
             id_ex_rs1        => id_ex_rs1,  --rs1
             id_ex_rs2        => id_ex_rs2,  --rs2
             id_ex_rd         => id_ex_rd,  --rd
+            id_ex_alu_result => id_ex_alu_result,
             -- <add other id_ex registers>
 
             -- EX/MEM pipeline registers
@@ -328,6 +330,7 @@ begin
             ex_mem_rs1        => ex_mem_rs1,  --rs1
             ex_mem_rs2        => ex_mem_rs2,  --rs2
             ex_mem_rd         => ex_mem_rd,  --rd
+            ex_mem_alu_result => ex_mem_alu_result,
             
             -- MEM/WB pipeline registers
             mem_wb_reg_write  => mem_wb_reg_write,
@@ -345,7 +348,8 @@ begin
             mem_wb_reg2_data  => mem_wb_reg2_data,  --reg2_data
             mem_wb_rs1        => mem_wb_rs1,  --rs1
             mem_wb_rs2        => mem_wb_rs2,  --rs2
-            mem_wb_rd         => mem_wb_rd  --rd
+            mem_wb_rd         => mem_wb_rd,  --rd
+            mem_wb_alu_result => mem_wb_alu_result
         );
     
     -- Instruction memory
@@ -425,7 +429,7 @@ begin
     alu_input_a <= id_ex_reg1_data;  
                        
     -- mux to select alu input B
-    alu_input_b <= id_ex_imm when alu_src = '1' else
+    alu_input_b <= id_ex_imm when id_ex_alu_src = '1' else
                    id_ex_reg2_data;
     -- ALU
     alu_inst: alu
@@ -455,11 +459,13 @@ begin
     mem_wb_mem_data <= mem_data; --suspicious
 
     -- Comparator 
-    not_equal_flag <= '1' when (ex_mem_reg1_data /= ex_mem_reg2_data);--<what do we compare to decide if we should branch?> else '0';
+    not_equal_flag <= '1' when (ex_mem_reg1_data /= ex_mem_reg2_data) else '0';--<what do we compare to decide if we should branch?> else '0';
     
     next_pc <= std_logic_vector(signed(ex_mem_npc) + signed(ex_mem_imm)) when ((ex_mem_branch = '1') and (not_equal_flag = '1')) else --<math based on NPC and imm> when (<what control signals?>) else -- branch case
                std_logic_vector(signed(ex_mem_npc) + signed(ex_mem_imm)) when (ex_mem_jump = '1') else --<math based on NPC and imm> when (<what control signals?>) else  -- jump case
-               NPC when ((ex_mem_branch = '1') and (not_equal_flag = '0')) or ((ex_mem_branch = '0') and (ex_mem_jump = '0')); 
+               NPC;--if_id_npc; --NPC
+               --when ((ex_mem_branch = '1') and (not_equal_flag = '0')) or ((ex_mem_branch = '0') and (ex_mem_jump = '0')) else
+               --next_pc; 
                --(<what control signals? are any needed?>); -- note: this happens during IF !!! 1st two during MEM
                --Don't think is right       
     -- MEM/WB pipeline register
@@ -471,6 +477,7 @@ begin
     -- MUX to write back to register file
     wb_data <= mem_wb_mem_data when (mem_wb_mem_read = '1') else --(<what control signals?>) else 
                x"10000000" when (mem_wb_load_addr = '1') else --(<what control signals?>) else  -- hack for custom load_addr instruction
-               mem_wb_alu_result when ((mem_wb_mem_read = '0') and (mem_wb_load_addr = '0'));
+               mem_wb_alu_result when ((mem_wb_mem_read = '0') and (mem_wb_load_addr = '0')) else
+               wb_data;
                --(<what control signals?>);                
 end Behavioral;

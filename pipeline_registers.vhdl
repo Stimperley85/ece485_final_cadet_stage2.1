@@ -37,7 +37,7 @@ entity pipeline_registers is
         id_ex_load_addr : inout STD_LOGIC;
         
         id_ex_npc : inout STD_LOGIC_VECTOR(31 downto 0) := (others => '0');--npc
-        id_ex_alu_result : inout STD_LOGIC_VECTOR(31 downto 0);--alu result
+        id_ex_alu_result : in STD_LOGIC_VECTOR(31 downto 0);--alu result
         id_ex_alu_op : inout STD_LOGIC_VECTOR(3 downto 0);--alu op
         id_ex_imm : inout STD_LOGIC_VECTOR(31 downto 0);--imm
         id_ex_instr : inout STD_LOGIC_VECTOR(31 downto 0);
@@ -98,7 +98,6 @@ begin
     begin
         if reset = '1' then
             
-            
             id_ex_reg_write <= '0';
             id_ex_alu_src <= '0';
             id_ex_mem_read <= '0';
@@ -110,7 +109,7 @@ begin
             
             -- <add other registers>
             id_ex_npc <= (others => '0');--npc
-            id_ex_alu_result <= (others => '0');--alu_result
+            --id_ex_alu_result <= (others => '0');--alu_result
             id_ex_alu_op <= (others => '0');--alu_op
             id_ex_imm <= (others => '0');--imm
             id_ex_reg1_data <= (others => '0');--reg1
