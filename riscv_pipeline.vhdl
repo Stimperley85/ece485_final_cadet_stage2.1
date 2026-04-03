@@ -395,7 +395,7 @@ begin
 --------------------------------------------------------------------------------
     -- ID units
     -- Register file [used in ID and WB stages]
-    reg_write_chip <= if_id_reg_write; --<what control signal?>;
+    reg_write_chip <= mem_wb_reg_write; --<what control signal?>;
     reg_file_inst: reg_file
         port map (
         clk       => clk,
@@ -459,7 +459,8 @@ begin
     
     next_pc <= std_logic_vector(signed(ex_mem_npc) + signed(ex_mem_imm)) when ((ex_mem_branch = '1') and (not_equal_flag = '1')) else --<math based on NPC and imm> when (<what control signals?>) else -- branch case
                std_logic_vector(signed(ex_mem_npc) + signed(ex_mem_imm)) when (ex_mem_jump = '1') else --<math based on NPC and imm> when (<what control signals?>) else  -- jump case
-               NPC when ((ex_mem_branch = '1') and (not_equal_flag = '0')) or ((ex_mem_branch = '0') and (ex_mem_jump = '0'));--(<what control signals? are any needed?>); -- note: this happens during IF !!! 1st two during MEM
+               NPC when ((ex_mem_branch = '1') and (not_equal_flag = '0')) or ((ex_mem_branch = '0') and (ex_mem_jump = '0')) else 
+               next_pc;--(<what control signals? are any needed?>); -- note: this happens during IF !!! 1st two during MEM
                --Don't think is right       
     -- MEM/WB pipeline register
 
@@ -470,6 +471,7 @@ begin
     -- MUX to write back to register file
     wb_data <= mem_wb_mem_data when (mem_wb_mem_read = '1') else --(<what control signals?>) else 
                x"10000000" when (mem_wb_load_addr = '1') else --(<what control signals?>) else  -- hack for custom load_addr instruction
-               mem_wb_alu_result when ((mem_wb_mem_read = '0') and (mem_wb_load_addr = '0'));--(<what control signals?>);      
-               
+               mem_wb_alu_result when ((mem_wb_mem_read = '0') and (mem_wb_load_addr = '0'))else
+               wb_data;--(<what control signals?>);      
+    --mem_wb_rd <= mem_wb_instr(11 downto 7);           
 end Behavioral;

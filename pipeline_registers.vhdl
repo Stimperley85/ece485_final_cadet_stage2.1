@@ -97,6 +97,8 @@ begin
     process(clk, reset)
     begin
         if reset = '1' then
+            
+            
             id_ex_reg_write <= '0';
             id_ex_alu_src <= '0';
             id_ex_mem_read <= '0';
@@ -111,7 +113,6 @@ begin
             id_ex_alu_result <= (others => '0');--alu_result
             id_ex_alu_op <= (others => '0');--alu_op
             id_ex_imm <= (others => '0');--imm
-            --instr
             id_ex_reg1_data <= (others => '0');--reg1
             id_ex_reg2_data <= (others => '0');--reg2
             id_ex_rs1 <= (others => '0');--rs1
