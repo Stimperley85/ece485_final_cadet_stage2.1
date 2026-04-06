@@ -463,7 +463,7 @@ begin
     
     next_pc <= std_logic_vector(signed(ex_mem_npc) + signed(ex_mem_imm)) when ((ex_mem_branch = '1') and (not_equal_flag = '1')) else --<math based on NPC and imm> when (<what control signals?>) else -- branch case
                std_logic_vector(signed(ex_mem_npc) + signed(ex_mem_imm)) when (ex_mem_jump = '1') else --<math based on NPC and imm> when (<what control signals?>) else  -- jump case
-               if_id_npc;--if_id_npc; --NPC
+               NPC;--if_id_npc; --NPC
                --when ((ex_mem_branch = '1') and (not_equal_flag = '0')) or ((ex_mem_branch = '0') and (ex_mem_jump = '0')) else
                --next_pc; 
                --(<what control signals? are any needed?>); -- note: this happens during IF !!! 1st two during MEM
